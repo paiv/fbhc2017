@@ -1,0 +1,44 @@
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef long double ld;
+#define fi first
+#define se second
+#define pb push_back
+
+const int N=302;
+int n,m;
+int c[N][N];
+int dp[N][N];
+const int inf=1e9+99;
+
+
+int _main() {
+	cin>>n>>m;
+	for(int i=0;i<n;i++) for(int j=0;j<m;j++) cin>>c[i][j];
+
+	for(int j=0;j<=n;j++) dp[0][j]=inf;
+	dp[0][0]=0;
+	for(int i=0;i<n;i++) {
+		for(int j=0;j<=n;j++) dp[i+1][j]=dp[i][j];
+		sort(c[i],c[i]+m);
+		int ps=0,p=0;
+		for(int j=0;j<=m;j++) {
+			for(int k=i;k<=n-p;k++) {
+				dp[i+1][k+p]=min(dp[i+1][k+p],dp[i][k] + ps + p*p);
+			}
+			++p;
+			ps+=c[i][j];
+		}
+	}
+
+	return dp[n][n];
+}
+
+int main() {
+	int TT; scanf("%d",&TT); for(int T=1;T<=TT;T++) {
+		printf("Case #%d: ",T);
+		cout<<_main()<<endl;
+	}
+}
+

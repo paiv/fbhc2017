@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.2)
 project(task4)
 
+# set(CMAKE_CXX_FLAGS "-m64")
+
 add_executable(task4 main.cpp)
 
 set_property(TARGET task4 PROPERTY CXX_STANDARD 11)

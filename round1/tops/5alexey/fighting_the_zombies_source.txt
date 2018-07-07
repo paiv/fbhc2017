@@ -1,0 +1,48 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int MX = 50;
+
+int x[MX], y[MX], n, r;
+
+int f(int rx, int ry, int dx, int dy) {
+	int res = 0;
+	for (int i = 0; i < n; i++) {
+		if (x[i] >= rx - r && x[i] <= rx && y[i] >= ry - r && y[i] <= ry) {
+			res++;
+			continue;
+		}
+		
+		if (x[i] + dx >= rx - r && x[i] + dx <= rx && y[i] + dy >= ry - r && y[i] + dy <= ry) {
+			res++;
+			continue;
+		}
+	}
+	
+	return res;
+}
+
+int main() {
+	int T;
+	scanf("%d", &T);
+	for (int t = 1; t <= T; t++) {
+		int ans = 0;
+		scanf("%d %d", &n, &r);
+		for (int i = 0; i < n; i++) scanf("%d %d", x + i, y + i);
+		
+		for (int i = 0; i < n; i++)
+			for (int j = 0; j < n; j++)
+				for (int p = 0; p < n; p++)
+					for (int q = 0; q < n; q++) {
+						ans = max(ans, f(x[i], y[j], x[i] - x[p], y[j] - y[q]));
+						ans = max(ans, f(x[i], y[j], x[i] - x[p], y[j] - r - y[q]));
+						ans = max(ans, f(x[i], y[j], x[i] - r - x[p], y[j] - y[q]));
+						ans = max(ans, f(x[i], y[j], x[i] - r - x[p], y[j] - r - y[q]));
+					}
+		
+		printf("Case #%d: %d\n", t, ans);
+	}
+	
+	return 0;
+}

@@ -1,0 +1,66 @@
+#include <cstdio>
+#include <cmath>
+#include <vector>
+#include <numeric>
+#include <algorithm>
+
+using namespace std;
+
+const int mod = 1000000007;
+
+pair<long long, long long> extended_gcd(long long a, long long b) {
+  if (b == 0) return make_pair(1, 0);
+  pair<long long, long long> t = extended_gcd(b, a % b);
+  return make_pair(t.second, t.first - t.second * (a / b));
+}
+
+long long modinverse(long long a, long long m) {
+  return (extended_gcd(a, m).first % m + m) % m;
+}
+
+int solve(int n, int m, vector<int> r) {
+  if (n == 1) return m;
+  if (n > m) return 0;
+  int sum = accumulate(r.begin(), r.end(), 0);
+  long long ans = 0;
+  vector<int> countPair(*max_element(r.begin(), r.end()) * 2 + 1);
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < i; j++) {
+      countPair[r[i] + r[j]] += 2;
+    }
+  }
+  for (int psum = 0; psum < countPair.size(); psum++) {
+    if (countPair[psum] == 0) continue;
+    long long len = (m - 1) - psum - (sum - psum) * 2;
+    if (len < 0) continue;
+    long long mul = 1;
+    mul *= modinverse(n, mod); mul %= mod;
+    mul *= modinverse(n - 1, mod); mul %= mod;
+    for (int k = 0; k < n; k++) {
+      mul *= n + len - k;
+      mul %= mod;
+    }
+    ans += ((countPair[psum] % mod) * mul) % mod;
+    ans %= mod;
+  }
+  ans %= mod;
+  ans += mod;
+  ans %= mod;
+  return ans;
+}
+
+int main() {
+  int testcase_cnt;
+  scanf("%d", &testcase_cnt);
+  for (int testcase = 1; testcase <= testcase_cnt; testcase++) {
+    int n, m;
+    scanf("%d%d", &n, &m);
+    vector<int> r(n);
+    for (int i = 0; i < n; i++) {
+      scanf("%d", &r[i]);
+    }
+    long long ans = solve(n, m, r);
+    printf("Case #%d: %lld\n", testcase, ans);
+  }
+  return 0;
+}

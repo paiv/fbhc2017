@@ -1,0 +1,53 @@
+#include <cstdio>
+#include <queue>
+#include <cmath>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+  int testcase_count;
+  scanf("%d", &testcase_count);
+  for (int testcase = 1; testcase <= testcase_count; testcase++) {
+    int ans = 0;
+    int n, r;
+    scanf("%d%d", &n, &r);
+    vector<int> x(n), y(n);
+    vector<int> xset, yset;
+    for (int i = 0; i < n; i++) {
+      scanf("%d%d", &x[i], &y[i]);
+    }
+    xset = x, yset = y;
+    sort(xset.begin(), xset.end());
+    xset.erase(unique(xset.begin(), xset.end()), xset.end());
+    sort(yset.begin(), yset.end());
+    yset.erase(unique(yset.begin(), yset.end()), yset.end());
+    for (int x1 = 0; x1 < xset.size(); x1++) {
+      for (int y1 = 0; y1 < yset.size(); y1++) {
+        for (int x2 = x1; x2 < xset.size(); x2++) {
+          int y2 = 0;
+          if (x2 == x1) y2 = y1;
+          for (; y2 < yset.size(); y2++) {
+            int cnt = 0;
+            int ox11 = xset[x1], ox12 = xset[x1] + r;
+            int oy11 = yset[y1], oy12 = yset[y1] + r;
+            int ox21 = xset[x2], ox22 = xset[x2] + r;
+            int oy21 = yset[y2], oy22 = yset[y2] + r;
+            for (int i = 0; i < n; i++) {
+              if (ox11 <= x[i] && x[i] <= ox12 && oy11 <= y[i] && y[i] <= oy12) {
+                cnt++;
+              }
+              else if (ox21 <= x[i] && x[i] <= ox22 && oy21 <= y[i] && y[i] <= oy22) {
+                cnt++;
+              }
+            }
+            ans = max(ans, cnt);
+          }
+        }
+      }
+    }
+    printf("Case #%d: %d\n", testcase, ans);
+  }
+  return 0;
+}

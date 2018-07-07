@@ -1,0 +1,63 @@
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef long double ld;
+#define fi first
+#define se second
+#define pb push_back
+
+const int N=102;
+int n,m,k;
+ll d[N][N];
+const ll inf=1e18+99;
+
+ll _main() {
+	cin>>n>>m>>k;
+	for(int i=0;i<n;i++) for(int j=0;j<n;j++) d[i][j]=inf;
+	for(;m--;) {
+		int a,b,g; cin>>a>>b>>g;
+		--a, --b;
+		assert(a!=b);
+		if(g<d[a][b]) d[a][b]=d[b][a]=g;
+	}
+	for(int i=0;i<n;i++) d[i][i]=0;
+	for(int k=0;k<n;k++) for(int i=0;i<n;i++) for(int j=0;j<n;j++)
+		d[i][j]=min(d[i][j],d[i][k]+d[k][j]);
+
+
+	map<int,ll> mm;
+	int ss,tt; cin>>ss>>tt; --ss, --tt;
+	int pend_drop=tt;
+	mm[ss]=d[0][ss];
+	--k;
+	for(;k--;) {
+		int s,t;
+		cin>>s>>t;
+		--s, --t;
+
+		map<int,ll> nn;
+		nn[s]=inf;
+		nn[pend_drop]=inf;
+		for(auto &P:mm) {
+			int loc=P.fi;
+			ll gas=P.se;
+
+			nn[s]=min(nn[s],gas+d[loc][pend_drop]+d[pend_drop][s]);
+			nn[pend_drop]=min(nn[pend_drop],gas+d[loc][s]+d[s][pend_drop]);
+		}
+		mm=nn;
+		pend_drop=t;
+	}
+
+	ll be=inf;
+	for(auto &P:mm) be=min(be,P.se+d[P.fi][pend_drop]);
+	return be==inf?-1:be;
+}
+
+int main() {
+	int TT; scanf("%d",&TT); for(int T=1;T<=TT;T++) {
+		printf("Case #%d: ",T);
+		cout<<_main()<<endl;
+	}
+}
+

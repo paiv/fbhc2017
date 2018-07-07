@@ -1,0 +1,60 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int MX = 100, INF = 1e9;
+
+int d[MX][MX], p[5001], q[5001];
+
+int main() {
+	int T;
+	scanf("%d", &T);
+	for (int t = 1; t <= T; t++) {
+		int n, m, k;
+		scanf("%d %d %d", &n, &m, &k);
+		
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++)
+				d[i][j] = INF;
+			d[i][i] = 0;
+		}
+		
+		for (int i = 0; i < m; i++) {
+			int u, v, e;
+			scanf("%d %d %d", &u, &v, &e);
+			u--; v--;
+			d[u][v] = d[v][u] = min(d[u][v], e);
+		}
+		
+		for (int k = 0; k < n; k++)
+			for (int i = 0; i < n; i++)
+				for (int j = 0; j < n; j++)
+					d[i][j] = min(d[i][k] + d[k][j], d[i][j]);
+		
+		for (int i = 0; i < k; i++) {
+			scanf("%d %d", p + i, q + i);
+			p[i]--;
+			q[i]--;
+		}
+		
+		long long A = 0, B = INF, v = 0;
+		for (int i = 0; i < k; i++) {
+			if (d[v][p[i]] == INF || d[p[i]][q[i]] == INF) {
+				A = -1;
+				break;
+			}
+			
+			long long AA = A + d[v][p[i]];
+			long long BB = B;
+			
+			A = min(BB + d[v][q[i]], AA + d[p[i]][q[i]]);
+			B = min(BB + d[v][p[i + 1]], AA + d[p[i]][p[i + 1]]) + d[p[i + 1]][q[i]];
+			
+			v = q[i];
+		}
+		
+		printf("Case #%d: %lld\n", t, A);
+	}
+	
+	return 0;
+}

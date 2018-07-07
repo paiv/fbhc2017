@@ -1,0 +1,70 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+typedef long double ld;
+
+#define all(c) (c).begin(),(c).end()
+#define sz(c) (int)(c).size()
+#define pb push_back
+#define mp make_pair
+#define x first
+#define y second
+#define image(a) {sort(all(a)), a.resize(unique(all(a)) - a.begin());}
+
+struct pnt {
+  ll x, y;
+  pnt() {
+  }
+  pnt(ll _x, ll _y) {
+    x = _x;
+    y = _y;
+  }
+};
+
+void solve() {
+  int n;
+  ll R;
+  cin >> n >> R;
+  vector<pnt> p(n);
+  for (int i = 0; i < n; i++) {
+    cin >> p[i].x >> p[i].y;
+  }
+  vector<ll> msk;
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      if (abs(p[i].x - p[j].x) <= R && abs(p[i].y - p[j].y) <= R) {
+        pnt lw = {min(p[i].x, p[j].x), min(p[i].y, p[j].y)};
+        ll cur = 0;
+        for (int k = 0; k < n; k++) {
+          if (p[k].x >= lw.x && p[k].x <= lw.x + R && 
+              p[k].y >= lw.y && p[k].y <= lw.y + R) {
+            cur |= 1ll << k;
+          }
+        }
+        msk.pb(cur);
+      }
+    }
+  }
+  int ans = 0;
+  for (int i = 0; i < sz(msk); i++) {
+    for (int j = i; j < sz(msk); j++) {
+      ans = max(ans, __builtin_popcountll(msk[i] | msk[j]));
+    }
+  }
+  cout << ans << endl;
+}
+
+int main(){
+  #ifdef home
+  assert(freopen("a.out","wt",stdout));
+  assert(freopen("a.in","rt",stdin));
+  #endif              
+  int T;
+  cin >> T;
+  for (int ti = 1; ti <= T; ti++) {
+    cout << "Case #" << ti << ": ";
+    solve();
+  }
+  return 0;
+}

@@ -1,0 +1,60 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int MX = 2000, md = 1000000007;
+
+int a[MX];
+long long fact[MX + 1], inv[MX + 1], inv_fact[MX + 1], f[MX + 1], g[MX + 1];
+
+int main() {
+	fact[0] = fact[1] = inv_fact[0] = inv_fact[1] = inv[1] = 1;
+	for (int i = 2; i <= MX; i++) {
+		inv[i] = md - (md / i) * inv[md % i] % md;
+		fact[i] = fact[i - 1] * i % md;
+		inv_fact[i] = inv_fact[i - 1] * inv[i] % md;
+	}
+	
+	int T;
+	scanf("%d", &T);
+	for (int t = 1; t <= T; t++) {
+		memset(f, 0, sizeof f);
+		
+		int n, m, sum = 0;
+		scanf("%d %d", &n, &m);
+		for (int i = 0; i < n; i++) {
+			scanf("%d", a + i);
+			sum += 2 * a[i];
+			f[a[i]]++;
+		}
+		
+		if (n == 1) {
+			printf("Case #%d: %d\n", t, m);
+			
+			continue;
+		}
+		
+		for (int i = MX - 1; i >= 0; i--) f[i] += f[i + 1];
+		
+		int ans = 0;
+		for (int xy = 0; xy < 2 * MX - 1; xy++) {
+			int left = m - 1 - sum + xy;
+			if (left < 0) continue;
+			
+			g[0] = 1;
+			for (int i = 1; i <= n; i++) g[i] = g[i - 1] * (left + i) % md;
+			
+			for (int x = 0, y = xy; y >= 0; x++, y--) {
+				if (x >= MX || y >= MX) continue;
+				int cnt = f[x] * f[y] - f[max(x, y)];
+				int parts = n - 1 + (x == 0 ? 1 : 0) + (y == 0 ? 1 : 0);
+				
+				ans = (ans + cnt * (fact[n - 2] * (g[parts - 1] * inv_fact[parts - 1] % md) % md)) % md;
+			}
+		}
+		
+		printf("Case #%d: %d\n", t, ans);
+	}
+	
+	return 0;
+}

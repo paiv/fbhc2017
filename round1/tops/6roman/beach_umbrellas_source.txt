@@ -1,0 +1,85 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+typedef long double ld;
+
+#define all(c) (c).begin(),(c).end()
+#define sz(c) (int)(c).size()
+#define pb push_back
+#define mp make_pair
+#define x first
+#define y second
+#define image(a) {sort(all(a)), a.resize(unique(all(a)) - a.begin());}
+
+const ll md = (int)1e9 + 7;
+ll mul(ll x, ll y) {
+  return (x * y) % md;
+}
+ll sum(ll x, ll y) {
+  return (x + y) % md;
+}
+ll poww(ll x, ll p) {
+  if (p == 0) {
+    return 1ll;
+  }
+  ll c = poww(x, p / 2);
+  c = mul(c, c);
+  if (p & 1) {
+    c = mul(c, x);
+  }
+  return c;
+}
+ll obr(ll x) {
+  return poww(x, md - 2);
+}
+void solve() {
+  int n;
+  ll m;
+  cin >> n >> m;
+  ll sumA = 0;
+  vector<ll> a(n);
+  for (int i = 0; i < n; i++) {
+    cin >> a[i];
+    sumA += a[i] * 2;
+  }
+  if (n == 1) {
+    cout << m % md << endl;
+    return;
+  }
+  ll ans = 0;
+  unordered_map<ll, ll> D;
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) if (i != j) {
+      if (sumA - a[i] - a[j] <= m - 1) {
+        D[m - 1 - (sumA - a[i] - a[j])]++;
+      }
+    }
+  }
+  for (auto p : D) {
+    ll d = p.x;
+    ll c = p.y;
+    ll f = 1;
+    for (ll i = 1; i <= n; i++) {
+      f = mul(f, (d + i) % md);
+    }
+    ans = sum(ans, mul(f, c));
+  }
+  ans = mul(ans, obr(n));
+  ans = mul(ans, obr(n - 1));
+  cout << ans << endl;
+}
+
+int main(){
+  #ifdef home
+  assert(freopen("a.out","wt",stdout));
+  assert(freopen("a.in","rt",stdin));
+  #endif              
+  int T;
+  cin >> T;
+  for (int ti = 1; ti <= T; ti++) {
+    cout << "Case #" << ti << ": ";
+    solve();
+  }
+  return 0;
+}

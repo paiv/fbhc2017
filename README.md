@@ -29,3 +29,8 @@ Work this out on a paper. There is no need for enumeration, and it has single so
 * [Dice-Rolls in Role-Playing Games](http://www.diku.dk/~torbenm/Troll/RPGdice.pdf) (Troll)
 * tool: [AnyDice](http://anydice.com/)
 * tool: [Troll dice roller and probability calculator](http://topps.diku.dk/torbenm/troll.msp)
+
+
+# Round 1
+
+https://www.facebook.com/hackercup/problem/1800890323482794/

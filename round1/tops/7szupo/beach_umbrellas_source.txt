@@ -1,0 +1,89 @@
+#include <stdio.h>
+#include <algorithm>
+
+long long MOD = 1e9+7;
+int casI;
+long long Pow(long long a, long long p)
+{
+    if (p == 0) return 1;
+    long long b = Pow(a, p/2);
+    //if (casI == 0) printf("P%lld %lld %lld\n", a, p, b);
+    return ((b*b) % MOD) * (p%2 ? a : 1) % MOD;
+}
+long long Inv(long long a)
+{
+    return Pow(a%MOD, MOD-2);
+}
+
+long long rad[2010];
+long long dp[4010];
+
+long long Solve()
+{
+    long long n, m;
+    scanf("%lld%lld", &n, &m);
+    m--;
+    long long s = 0, maxR = 0;
+    for (int i=0; i<n; i++)
+    {
+        scanf("%lld", &rad[i]);
+        s+=rad[i];
+        maxR = std::max(rad[i], maxR);
+    }
+    long long mul = 1;
+    for (int i=1; i<=n-2; i++)
+    {
+        mul = mul * i % MOD;
+    }
+    bool first = true;
+    for (int i=0; i<=maxR*2; i++)
+    {
+        long long res = m - s*2 + i;
+        if (res < 0) dp[i] = 0;
+        else if (first)
+        {
+            first = false;
+            dp[i] = 1;
+            for (int j=1; j<=n; j++)
+            {
+                dp[i] = dp[i] * (res + j) % MOD;
+            }
+        }
+        else
+        {
+            dp[i] = dp[i-1] * (res + n) % MOD;
+            dp[i] = dp[i] * Inv(res) % MOD;
+        }
+    }
+    long long fact = 1;
+    for (int i=1; i<=n; i++) fact = fact * i % MOD;
+    fact = Inv(fact);
+    for (int i=0; i<=maxR*2; i++)
+    {
+        dp[i] = dp[i] * fact % MOD;
+    }
+
+    long long ans = 0;
+    for (int i=0; i<n; i++)
+    {
+        for (int j=0; j<n; j++)
+        {
+            if (n>1 && i==j) continue;
+            ans = (ans + dp[rad[i]+rad[j]]) % MOD;
+        }
+    }
+    return ans * mul % MOD;
+}
+
+int main()
+{
+    int cas;
+    scanf("%d", & cas);
+    for (int i=0; i<cas; i++)
+    {
+        casI = i;
+        long long ans = Solve();
+        printf("Case #%d: %lld\n", i+1, ans);
+    }
+    return 0;
+}

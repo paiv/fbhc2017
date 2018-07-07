@@ -1,0 +1,125 @@
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef long double ld;
+typedef complex<ld> pt;
+#define fi first
+#define se second
+#define pb push_back
+const ld eps=1e-10;
+
+const int N=50;
+int n,R,rad;
+ld rr;
+int x[N],y[N];
+pt w[N];
+
+pair<pt,ld> circ1(pt A) {
+	return {A,eps};
+}
+pair<pt,ld> circ2(pt A,pt B) {
+	return {ld(.5)*(A+B),ld(.5)*abs(A-B)};
+}
+
+const pair<pt,ld> fail={{33,33},-3};
+pair<pt,ld> circ3(pt A,pt B,pt C) {
+	ld a=norm(C-B),b=norm(C-A),c=norm(A-B);
+	if(a<eps) return fail;
+	if(b<eps) return fail;
+	if(c<eps) return fail;
+	ld aa=a*(b+c-a), bb=b*(c+a-b), cc=c*(a+b-c);
+	if(abs(aa+bb+cc)<eps) return fail;
+	pt D=(A*aa + B*bb + C*cc)/(aa+bb+cc);
+	return {D,(abs(D-A),abs(D-B),abs(D-C))/3};
+}
+
+int linear(const vector<int> &xs) { //assert sorted
+	int R=0;
+	int n=(int)xs.size();
+	int Z=0;
+	for(int L=0;L<n;L++) {
+		if(R<L) R=L;
+		for(;R<n-1 && xs[R+1]-xs[L]<=rad;) ++R;
+		Z=max(Z,R-L+1);
+	}
+	return Z;
+}
+int count_best(const vector<pair<int,int> > &vv) { //assert sorted lex
+	int n=(int)vv.size();
+
+	int Z=0;
+	for(int iy=0;iy<n;iy++) {
+		int yL=vv[iy].se;
+		int yR=yL+R;
+		vector<int> xs;
+		for(int i=0;i<n;i++) if(yL<=vv[i].se && vv[i].se<=yR)
+			xs.pb(vv[i].fi);
+
+		Z=max(Z,linear(xs));
+	}
+	return Z;
+}
+
+int _main() {
+	cin>>n>>R;
+	rad=R;
+	rr=R;
+	for(int i=0;i<n;i++) cin>>x[i]>>y[i];
+	vector<pair<int,int> > ipts;
+	for(int i=0;i<n;i++) ipts.pb({x[i],y[i]});
+	for(int i=0;i<n;i++) w[i]={ld(x[i]),ld(y[i])};
+
+	int Z=0;
+	for(int i=0;i<n;i++) for(int j=i+1;j<n;j++) for(int k=j+1;k<n;k++) {
+		pt C;
+		ld rrad;
+		tie(C,rrad)=circ3(w[i],w[j],w[k]);
+		if(rrad<=0) continue;
+
+		vector<pair<int,int> > ycirc,ncirc;
+		for(int i=0;i<n;i++) {
+			(abs(C-w[i])<=rrad+eps ? ycirc : ncirc).pb(ipts[i]);
+		}
+		sort(ycirc.begin(),ycirc.end());
+		sort(ncirc.begin(),ncirc.end());
+		Z=max(Z,count_best(ycirc)+count_best(ncirc));
+	}
+	for(int i=0;i<n;i++) for(int j=i+1;j<n;j++) {
+		pt C;
+		ld rrad;
+		tie(C,rrad)=circ2(w[i],w[j]);
+		if(rrad<=0) continue;
+
+		vector<pair<int,int> > ycirc,ncirc;
+		for(int i=0;i<n;i++) {
+			(abs(C-w[i])<=rrad+eps ? ycirc : ncirc).pb(ipts[i]);
+		}
+		sort(ycirc.begin(),ycirc.end());
+		sort(ncirc.begin(),ncirc.end());
+		Z=max(Z,count_best(ycirc)+count_best(ncirc));
+	}
+	for(int i=0;i<n;i++) {
+		pt C;
+		ld rrad;
+		tie(C,rrad)=circ1(w[i]);
+		if(rrad<=0) continue;
+
+		vector<pair<int,int> > ycirc,ncirc;
+		for(int i=0;i<n;i++) {
+			(abs(C-w[i])<=rrad+eps ? ycirc : ncirc).pb(ipts[i]);
+		}
+		sort(ycirc.begin(),ycirc.end());
+		sort(ncirc.begin(),ncirc.end());
+		Z=max(Z,count_best(ycirc)+count_best(ncirc));
+	}
+
+	return Z;
+}
+
+int main() {
+	int TT; scanf("%d",&TT); for(int T=1;T<=TT;T++) {
+		printf("Case #%d: ",T);
+		cout<<_main()<<endl;
+	}
+}
+

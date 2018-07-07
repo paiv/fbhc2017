@@ -1,0 +1,57 @@
+#include "stdio.h"
+#include <algorithm>
+
+int pies[310][310];
+int used[310];
+
+long long Solve()
+{
+    long long ans = 0;
+    int n, m;
+    scanf("%d%d", &n, &m);
+    for (int i=0; i<n; i++)
+    {
+        for (int j=0; j<m; j++)
+        {
+            scanf("%d", &pies[i][j]);
+        }
+        std::sort(pies[i], pies[i]+m);
+        for (int j=0; j<m; j++)
+        {
+            pies[i][j] += 2*j+1;
+        }
+    }
+    int pos[310];
+    for (int i=0; i<n; i++) used[i] = 0;
+    for (int i=0; i<n; i++)
+    {
+        int best = 1000000000;
+        int bestN = 0;
+        for (int j=0; j<=i; j++)
+        {
+            if (used[j] < m)
+            {
+                if (pies[j][used[j]] < best)
+                {
+                    bestN = j;
+                    best = pies[j][used[j]];
+                }
+            }
+        }
+        used[bestN]++;
+        ans += best;
+    }
+    return ans;
+}
+
+int main()
+{
+    int cas;
+    scanf("%d", &cas);
+    for (int i = 0; i < cas; i++)
+    {
+        long long ans = Solve();
+        printf("Case #%d: %lld\n", i+1, ans);
+    }
+    return 0;
+}

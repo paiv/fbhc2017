@@ -1,0 +1,79 @@
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef long double ld;
+#define fi first
+#define se second
+#define pb push_back
+
+const int P=1e9+7;
+
+ll powq(ll x,int e) {
+	if(!e) return 1;
+	if(e&1) return powq(x,e-1)*x%P;
+	x=powq(x,e>>1);
+	return x*x%P;
+}
+ll inv(ll x) {
+	return powq(x,P-2);
+}
+ll FAC(ll x) {
+	assert(x>=0);
+	ll z=1;
+	for(;x;) {
+		z=z*x%P;
+		--x;
+	}
+	return z;
+}
+void ADD(ll &p,ll &q,ll pp,ll qq) {
+	p = (p*qq + pp*q) % P;
+	q = (q*qq)%P;
+}
+int _main() {
+	int n,m;
+	static int r[2048];
+	cin>>n>>m;
+	for(int i=0;i<n;i++) cin>>r[i];
+
+	if(n==1) return m;
+
+	sort(r,r+n);
+	int rsum=accumulate(r,r+n,0);
+	int tot_wid = rsum*2;
+	map<int,int> req;
+	for(int i=0;i<n;i++) for(int j=0;j<n;j++) if(i!=j) {
+		int in_wid=tot_wid-r[i]-r[i]-r[j]-r[j];
+		int free=m-r[i]-r[j]-in_wid-1;
+		if(free<0) continue;
+		req[free] += 1;
+	}
+
+	ll choice_num = FAC(n-2);
+	ll choice_den = 1;
+	ll psum_num = 0;
+	ll psum_den = 1;
+	ll qsum_num = 0;
+	ll qsum_den = 1;
+
+	ll ans_num=0;
+	ll ans_den=1;
+	for(int i=0;i<=m;i++) {
+		ADD(psum_num,psum_den,choice_num,choice_den);
+		ADD(qsum_num,qsum_den,psum_num,psum_den);
+		choice_num = choice_num*(n-2+i+1)%P;
+		choice_den = choice_den*(i+1)%P;
+
+		if(req.count(i)) ADD(ans_num,ans_den,qsum_num*req[i]%P,qsum_den);
+	}
+
+	return ans_num*inv(ans_den)%P;
+}
+
+int main() {
+	int TT; scanf("%d",&TT); for(int T=1;T<=TT;T++) {
+		printf("Case #%d: ",T);
+		cout<<_main()<<endl;
+	}
+}
+
